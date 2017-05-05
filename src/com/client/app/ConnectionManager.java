@@ -31,7 +31,7 @@ public class ConnectionManager implements Runnable{
 		try {
 		    message = client.getReader().readLine();
 		    if(message != null && !"".equals(message)){
-			System.out.println("Got message from server: " + message);
+			System.out.println(message);
 		    }
 		} catch (IOException e) {
 		    e.printStackTrace();
