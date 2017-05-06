@@ -17,10 +17,10 @@ public class ConnectionManager implements Runnable{
     }
 
     private class SocketReader implements Runnable {
-	private Client cliet;
+	private Client client;
 	
 	public SocketReader(Client client){
-	    this.cliet = client;
+	    this.client = client;
 	}
 	
 	@Override
@@ -31,6 +31,7 @@ public class ConnectionManager implements Runnable{
 		try {
 		    message = client.getReader().readLine();
 		    if(message != null && !"".equals(message)){
+			client.getUI().addMessage(message);
 			System.out.println(message);
 		    }
 		} catch (IOException e) {

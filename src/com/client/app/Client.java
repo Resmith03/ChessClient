@@ -7,11 +7,14 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.client.ui.UI;
+
 public class Client implements Runnable{
     private static final String SERVER_ADDRESS = "127.0.0.1";
     private static final int SERVER_PORT = 1321;
     private BufferedReader reader;
     private PrintWriter writer;
+    private UI ui;
     
     private Socket socket;
     
@@ -25,7 +28,9 @@ public class Client implements Runnable{
 	return connected;
     }
     
-    public Client() throws UnknownHostException, IOException{
+    public Client(UI ui) throws UnknownHostException, IOException{
+	this.ui = ui;
+	ui.setClient(this);
 	this.socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
 	this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	this.writer = new PrintWriter(socket.getOutputStream(), true);
@@ -45,5 +50,9 @@ public class Client implements Runnable{
 
     public PrintWriter getWriter() {
 	return writer;
+    }
+    
+    public UI getUI(){
+	return ui;
     }
 }
