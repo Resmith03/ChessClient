@@ -7,7 +7,7 @@ import com.client.ui.UI;
 public class App {
     public static void main (String args[]){
 	try {
-	    new Thread(new Client(new UI())).start();
+	    new UI(new Client());
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
