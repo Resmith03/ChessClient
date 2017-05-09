@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -13,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import com.client.DTO.BoardSpaceDTO;
 import com.client.DTO.PlayerDTO;
 import com.client.app.Client;
 import com.client.models.ContentType;
@@ -33,11 +36,14 @@ public class LobbyPanel extends JPanel{
     private boolean active;
     private JLabel instructions;
     private UI ui;
+    private static final Integer RADIO_BUTTON_X=10;
+    private static final Integer RADIO_BUTTON_Y=60;
+    private List<JButton> challengeButtons;
     
     public LobbyPanel(UI ui, Client player){
 	this.ui = ui;
+	challengeButtons = new ArrayList<JButton>();
 	dropdown = new JComboBox<PlayerDTO>();
-	dropdown.addActionListener(new DropdownListener());
 	dropdown.addPopupMenuListener(new PopupListener());
 	dropdown.setSize(310,20);
 	dropdown.setLocation(10, 40);
@@ -55,6 +61,7 @@ public class LobbyPanel extends JPanel{
 	this.player = player;
 	setPanelDefaults();
 	addLogo();
+	new Thread(new ChallengeListener()).start();
     }
     
     public void setInactive(){
@@ -103,20 +110,13 @@ public class LobbyPanel extends JPanel{
 		    List<PlayerDTO> listOfPlayers = mapper.readValue(response.getPayload(), new TypeReference<List<PlayerDTO>>(){});
 		    dropdown.removeAllItems();
 		
-		    for(PlayerDTO player:listOfPlayers){
-			dropdown.addItem(player);
+		    for(PlayerDTO playerDTO:listOfPlayers){
+			dropdown.addItem(playerDTO);
 		    }
 		}catch(Exception ex){
 		    ex.printStackTrace();
 		}
 	    }
-	}
-	
-    }
-    private class DropdownListener implements ActionListener{
-	@Override
-	public void actionPerformed(ActionEvent event) {
-	    
 	}
     }
     
@@ -124,11 +124,103 @@ public class LobbyPanel extends JPanel{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    //Response response = player.sendRequest(new Request(ContentType.PLAYER, MessageType.POST, ResponseType.YES_NO, String.valueOf(((PlayerDTO)dropdown.getSelectedItem()).getId())));
-	    if(/*response.getPayload().equalsIgnoreCase("Y")*/true){
-		ui.setActivePanel(new GamePanel(ui,player));
+	    System.out.println("Sending challenge request to: " + String.valueOf(((PlayerDTO)dropdown.getSelectedItem()).getId()));
+	    Response response = player.sendRequest(new Request(ContentType.CHALLENGE, MessageType.POST, ResponseType.YES_NO, String.valueOf(((PlayerDTO)dropdown.getSelectedItem()).getId())));
+	    if(response != null){
+	    if(response.getContentType().equals(ContentType.BOARD)){
+		List<BoardSpaceDTO> boardSpaces = new ArrayList<BoardSpaceDTO>();
+		
+		try {
+		    boardSpaces = new ObjectMapper().readValue(response.getPayload(),new TypeReference<List<BoardSpaceDTO>>(){});
+		} catch (IOException e1) {
+		    e1.printStackTrace();
+		}
+		
+		ui.setActivePanel(new GamePanel(ui,player,boardSpaces));
+	    }
 	    }
 	}
 	
+    }
+    private class RadioButtonListener implements ActionListener{
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    // TODO Auto-generated method stub
+	    
+	}
+	
+    }
+    
+    private class AcceptChallengeListener implements ActionListener{
+	private Request request;
+	
+	public AcceptChallengeListener(Request request){
+	    this.request = request;
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    ChallengeButton button = (ChallengeButton) e.getSource();
+	    String requestId = button.getRequestId();
+	    player.sendResponse(requestId, ContentType.CHALLENGE, MessageType.POST, "Y");
+	    List<BoardSpaceDTO> spaces = new ArrayList<BoardSpaceDTO>();
+	    
+	    try {
+		spaces = new ObjectMapper().readValue(request.getPayload(), new TypeReference<List<BoardSpaceDTO>>(){});
+	    } catch (Exception e1) {
+		e1.printStackTrace();
+	    }
+	    ui.setActivePanel(new GamePanel(ui, player, spaces ));
+	}
+	
+    }
+    private class ChallengeListener implements Runnable{
+
+	@Override
+	public void run() {
+	    
+	    while(true){
+		List<Request> requests = player.getChallengeRequests();
+		
+		//remove old buttons
+		for(JButton radioButton:challengeButtons){
+		    remove(radioButton);
+		}
+		
+		
+		int counter = 1;
+		
+		if(requests != null){		
+
+		for(Request request:requests){
+		    
+		    ChallengeButton challenge = new ChallengeButton("Accept Challenge #" + counter, request.getId());
+		    challenge.setSize(200,30);
+		    challenge.setLocation(RADIO_BUTTON_X, RADIO_BUTTON_Y + (40 * counter));
+		    challenge.addActionListener(new AcceptChallengeListener(request));
+		    add(challenge);
+		    counter++;
+		}
+		revalidate();
+		repaint();
+		setVisible(true);
+		}
+		try {
+		    Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
+		}
+	    }
+	}
+    }
+    
+    private class ChallengeButton extends JButton{
+	private String requestId;
+	public String getRequestId(){return requestId;}
+	public ChallengeButton(String title, String requestId) {
+	    super(title);
+	    this.requestId = requestId;
+	}
     }
 }

@@ -186,7 +186,12 @@ public class Client {
     }   
     
     private class RequestHandler implements Runnable{
-	public RequestHandler(){}
+	
+	private List<Request> challengeRequests;
+	
+	public RequestHandler(){
+	    challengeRequests = new ArrayList<Request>();
+	}
 	
 	@Override
 	public void run() {
@@ -194,14 +199,21 @@ public class Client {
 		Request request = reader.getRequest();
 		
 		if(request != null){
-		    writer.sendResponse(process(request));
+		    Response response = process(request);
+		    if(response != null){
+			writer.sendResponse(response);
+		    }
 		}
 		
 		sleep();
 	    }
 	}
 
-
+	public void acceptChallengeRequest(String requestId){
+	    Response response = new Response(requestId, ContentType.CHALLENGE, MessageType.POST, "Y");
+	    writer.sendResponse(response);
+	}
+	
 	private void sleep() {
 	    try {
 		Thread.sleep(100);
@@ -242,24 +254,81 @@ public class Client {
 
 
 	private Response processPostRequest(Request request) {
-	    // TODO Auto-generated method stub
-	    return null;
+	    Response response = null;
+	    
+	    switch(request.getContentType()){
+	    case BOARD:
+		break;
+	    case CHALLENGE: response = processChallengeRequest(request);
+		break;
+	    case MOVE:
+		break;
+	    case NONE:
+		break;
+	    case PLAYER:
+		break;
+	    case PLAYER_LIST:
+		break;
+	    case STRING:
+		break;
+	    default:
+		break;
+	    }
+	    
+	    return response;
 	}
 
 
+
+	private Response processChallengeRequest(Request request) {
+	    Response response = null;
+	    
+	    challengeRequests.add(request);
+	    
+	    return response;
+	}
+
 	private Response processGetRequest(Request request) {
-	    // TODO Auto-generated method stub
-	    return null;
+	    Response response = null;
+	    
+	    switch(request.getMessageType()){
+	    case ERROR:
+		break;
+	    case GET:
+		break;
+	    case INFO:
+		break;
+	    case PING:
+		break;
+	    case POST:
+		break;
+	    default:
+		break;
+	    }
+	    
+	    return response;
 	}
 
 	private Response processPingRequest(Request request) {
 	    return new Response(request.getId(), ContentType.NONE, MessageType.PING, "ACTIVE");
+	}
+
+	public List<Request> getChallengeRequests() {
+	    return new ArrayList<Request>(challengeRequests);
 	}
 	
     }
 
     public Response sendRequest(Request request) {
 	return writer.sendRequest(request);
+    }
+
+    public List<Request> getChallengeRequests() {
+	return this.requestHandler.getChallengeRequests();
+    }
+
+    public void sendResponse(String requestId, ContentType challenge, MessageType post, String string) {
+	requestHandler.acceptChallengeRequest(requestId);
     }
 
 }

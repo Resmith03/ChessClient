@@ -4,5 +4,6 @@ public enum MessageType {
     PING,
     GET,
     POST, 
-    INFO
+    INFO, 
+    ERROR
 }

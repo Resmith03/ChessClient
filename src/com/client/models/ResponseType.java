@@ -7,6 +7,6 @@ public enum ResponseType {
     MOVE, 
     LOCATION, 
     YES_NO, 
-    INTEGER, 
+    INTEGER,
     PLAYER_LIST
 }
