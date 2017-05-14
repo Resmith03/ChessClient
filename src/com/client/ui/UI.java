@@ -7,14 +7,12 @@ import com.client.models.transport.Client;
 
 public class UI extends JFrame {
     
-    private Client player;
     private JPanel activePanel;
 
     public UI(Client player) {
 	setFrameDefaults();
 	setActivePanel(new LobbyPanel(this, player));
 	this.setVisible(true);
-	this.player = player;
     }
 
     public void setActivePanel(JPanel panel) {

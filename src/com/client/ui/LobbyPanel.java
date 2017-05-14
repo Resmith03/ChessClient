@@ -107,8 +107,11 @@ public class LobbyPanel extends JPanel {
 			    });
 		    dropdown.removeAllItems();
 
-		    for (Player player : listOfPlayers) {
-			dropdown.addItem(player);
+		    for (Player curPlayer : listOfPlayers) {
+			if(!curPlayer.getUsername().equals(player.getSocket().getLocalSocketAddress().toString())){
+			    dropdown.addItem(curPlayer);
+			}
+			
 		    }
 		} catch (Exception ex) {
 		    ex.printStackTrace();
@@ -135,8 +138,10 @@ public class LobbyPanel extends JPanel {
 		    }
 		    
 		    GamePanel panel = new GamePanel(player, spaces);
+		    panel.setBackground(Color.BLACK);
 		    player.setGamePanel(panel);
 		    ui.setActivePanel(panel);
+		    ui.setTitle(ui.getTitle() + " - BLACK PLAYER");
 		}
 	    }
 	}
@@ -157,6 +162,8 @@ public class LobbyPanel extends JPanel {
 	    player.sendResponse(requestId, ContentType.CHALLENGE, MessageType.POST, "Y");
 	    GamePanel panel = new GamePanel(player, new ArrayList<BoardSpace>());
 	    player.setGamePanel(panel);
+	    panel.setBackground(Color.WHITE);
+	    ui.setTitle(ui.getTitle() + " - WHITE PLAYER");
 	    ui.setActivePanel(panel);
 	}
     }
