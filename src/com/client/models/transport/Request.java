@@ -1,64 +1,75 @@
-package com.client.models;
+package com.client.models.transport;
 
 import java.util.UUID;
 
 public class Request {
-    private static Integer counter = 0;
+
     private String id;
     private MessageType messageType;
     private ContentType contentType;
     private String payload;
     private ResponseType responseType;
+    private String ipAddress;
     
-    public Request(){
+    public Request() {
 	id = UUID.randomUUID().toString();
     }
-    
-    public Request(ContentType contentType, MessageType messageType, ResponseType responseType, String payload){
+
+    public Request(String ipAddress, ContentType contentType, MessageType messageType, ResponseType responseType, String payload) {
 	this();
+	this.ipAddress = ipAddress;
 	this.messageType = messageType;
 	this.contentType = contentType;
 	this.responseType = responseType;
 	this.payload = payload;
     }
-    
+
     public String getId() {
-        return id;
+	return id;
     }
 
     public MessageType getMessageType() {
-        return messageType;
+	return messageType;
     }
 
     public void setMessageType(MessageType messageType) {
-        this.messageType = messageType;
+	this.messageType = messageType;
     }
 
     public ContentType getContentType() {
-        return contentType;
+	return contentType;
     }
 
     public void setContentType(ContentType contentType) {
-        this.contentType = contentType;
+	this.contentType = contentType;
     }
 
     public String getPayload() {
-        return payload;
+	return payload;
     }
 
     public void setPayload(String payload) {
-        this.payload = payload;
+	this.payload = payload;
     }
 
     public ResponseType getResponseType() {
-        return responseType;
+	return responseType;
     }
 
     public void setResponseType(ResponseType responseType) {
-        this.responseType = responseType;
+	this.responseType = responseType;
     }
 
     public void setId(String id) {
-        this.id = id;
+	this.id = id;
     }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+    
 }

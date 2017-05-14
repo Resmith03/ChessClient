@@ -1,65 +1,65 @@
-package com.client.models;
+package com.client.models.transport;
 
 import java.util.UUID;
 
 public class Response {
-    private static Integer counter = 0;
+
     private String id;
     private MessageType messageType;
     private ContentType contentType;
     private String payload;
     private String requestId;
-    
-    private Response(){
+
+    private Response() {
 	id = UUID.randomUUID().toString();
     }
-    
-    private Response(String requestId){
+
+    private Response(String requestId) {
 	this();
 	this.requestId = requestId;
     }
-    
-    public Response(String requestId, ContentType contentType, MessageType messageType, String payload){
+
+    public Response(String requestId, ContentType contentType, MessageType messageType, String payload) {
 	this(requestId);
 	this.messageType = messageType;
 	this.contentType = contentType;
 	this.payload = payload;
     }
-    
+
     public String getId() {
-        return id;
+	return id;
     }
 
     public MessageType getMessageType() {
-        return messageType;
+	return messageType;
     }
 
     public void setMessageType(MessageType messageType) {
-        this.messageType = messageType;
+	this.messageType = messageType;
     }
 
     public ContentType getContentType() {
-        return contentType;
+	return contentType;
     }
 
     public void setContentType(ContentType contentType) {
-        this.contentType = contentType;
+	this.contentType = contentType;
     }
 
     public String getPayload() {
-        return payload;
+	return payload;
     }
 
     public void setPayload(String payload) {
-        this.payload = payload;
+	this.payload = payload;
     }
 
     public String getRequestId() {
-        return requestId;
+	return requestId;
     }
 
     public void setRequestId(String requestId) {
-        this.requestId = requestId;
+	this.requestId = requestId;
     }
-    
+
 }
