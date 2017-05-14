@@ -153,17 +153,13 @@ public class GamePanel extends JPanel {
 	setVisible(true);
     }
 
-//    private void lockBoard() {
-//	for (JToggleButton button : buttonLocations.keySet()) {
-//	    button.setEnabled(false);
-//	}
-//    }
-//
-//    private void unlockBoard() {
-//	for (JToggleButton button : buttonLocations.keySet()) {
-//	    button.setEnabled(true);
-//	}
-//    }
+    private void lockBoard() {
+	setEnabled(false);
+    }
+
+    private void unlockBoard() {
+	setEnabled(true);
+    }
 
     private class BoardSpaceListener implements ItemListener {
 	private ObjectMapper mapper;
@@ -179,10 +175,11 @@ public class GamePanel extends JPanel {
 	    }
 
 	    if (ev.getStateChange() == ItemEvent.SELECTED) {
-		System.out.println("Adding Selected Button");
+
 		selected.add((JToggleButton) ev.getSource());
 
 		if (selected.size() > 1) {
+		    lockBoard();
 		    clearing = true;
 
 		    JToggleButton fromButton = selected.get(0);
@@ -213,6 +210,7 @@ public class GamePanel extends JPanel {
 		    }
 
 		    selected.clear();
+		    unlockBoard();
 		} else if (ev.getStateChange() == ItemEvent.DESELECTED) {
 		    selected.remove((JToggleButton) ev.getSource());
 		}

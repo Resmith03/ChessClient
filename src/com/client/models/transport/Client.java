@@ -19,25 +19,26 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Client {
-    private final String SERVER_ADDRESS = "127.0.0.1";
-    private final Integer SERVER_PORT = 1321;
-
     private SocketReader reader;
     private SocketWriter writer;
     private Socket socket;
     private RequestHandler requestHandler;
     private boolean connected;
     private GamePanel gamePanel;
-
-    public Client() throws UnknownHostException, IOException {
-	socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+    
+    public Client(){
+	requestHandler = new RequestHandler();
+	connected = false;
+    }
+    
+    public void connect(String server, Integer port) throws UnknownHostException, IOException{
+	socket = new Socket(server, port);
 	writer = new SocketWriter(socket.getOutputStream());
 	reader = new SocketReader(socket.getInputStream());
-	requestHandler = new RequestHandler();
-	connected = true;
 	new Thread(writer).start();
 	new Thread(reader).start();
 	new Thread(requestHandler).start();
+	connected = true;
     }
 
     public void setGamePanel(GamePanel panel) {
@@ -47,8 +48,7 @@ public class Client {
 	return socket;
     }
     private class SocketWriter implements Runnable {
-	private Integer MAX_ATTEMPTS = 10;
-	private Integer REQUEST_PAUSE = 500;
+
 	private PrintWriter writer;
 	private volatile List<Request> requests;
 	private volatile List<Response> responses;

@@ -9,9 +9,9 @@ public class UI extends JFrame {
     
     private JPanel activePanel;
 
-    public UI(Client player) {
+    public UI(Client client) {
 	setFrameDefaults();
-	setActivePanel(new LobbyPanel(this, player));
+	setActivePanel(new ConnectionPanel(this, client));
 	this.setVisible(true);
     }
 
